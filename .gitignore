@@ -205,3 +205,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Override global *.md ignore (e.g. ~/.gitignore_global) for this repo
+!README.md
