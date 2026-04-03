@@ -1,0 +1,44 @@
+[project]
+name = "mlx-fish-speech"
+version = "0.1.0"
+description = "Fish-Speech TTS implementation using MLX for Apple Silicon"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "MLX-TTS Contributors"}
+]
+keywords = ["tts", "speech-synthesis", "mlx", "apple-silicon"]
+
+dependencies = [
+    "mlx>=0.21.0",
+    "numpy>=1.26.0",
+    "tiktoken>=0.8.0",
+    "soundfile>=0.12.0",
+    "huggingface-hub>=0.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+mlx-fish-speech = "mlx_fish_speech.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mlx_fish_speech*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
