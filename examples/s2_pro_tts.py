@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 """
-S2-Pro TTS — 基本用法示例（含音色克隆）
+S2 Pro TTS — 基本用法示例（含音色克隆）
 
-Fish-Speech S2-Pro: 36 层, 2560 dim, ~9.12GB
-使用 Conversation chat template 格式，支持音频参考（音色克隆）和情感标签。
+对应上游 **Fish Audio S2 Pro**（Hugging Face: https://huggingface.co/fishaudio/s2-pro ）：
+Dual-AR（慢 AR 约 4B + Fast AR 约 0.4B）、RVQ 10 码本约 21 Hz；多语言与 `[标签]` 细粒度韵律/情感控制、
+短时参考音频零样本克隆（官方常见建议约 10–30 秒）等，详见官方 README 与
+https://speech.fish.audio/ 。技术报告: https://arxiv.org/abs/2603.08823
+许可: Fish Audio Research License（见 HF 模型仓库 LICENSE.md）。
+
+本仓库内为 MLX 实现；本示例从 `weights/s2-pro` 加载，使用 **Conversation / chat template** 格式，
+支持参考码本 `--prompt` 与 `[标签]`。层数/维度/体积以实际 checkpoint 为准。
 
 用法:
     # 基本生成（无音色参考）

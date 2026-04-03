@@ -2,8 +2,12 @@
 """
 S1-mini TTS — 基本用法示例
 
-OpenAudio S1-mini: 28 层, 1024 dim, ~500MB
-使用 ContentSequence interleave 格式，无需音频参考即可生成语音。
+对应上游 **Fish Audio S1-mini**（Hugging Face: https://huggingface.co/fishaudio/s1-mini ）：
+约 0.5B、S1 全尺寸版的蒸馏模型；多语言、官方提供大量 (情感)/(语气) 类文本标记说明（见模型卡）。
+许可以模型卡为准（CC-BY-NC-SA-4.0）。
+
+本仓库内为该权重的 MLX 实现；本示例从 `weights/openaudio-s1-mini` 加载，使用 **ContentSequence interleave**
+格式，无需参考音频即可合成。架构规模随权重而定（例如约 28 层 / 1024 dim 量级，以 checkpoint 为准）。
 
 用法:
     python examples/s1_mini_tts.py
