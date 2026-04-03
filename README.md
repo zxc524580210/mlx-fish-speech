@@ -1,39 +1,41 @@
 # MLX Fish-Speech
 
-Fish-Speech 文本转语音的 MLX 实现，面向 Apple Silicon。
+**English** | [简体中文](README.zh.md)
 
-## 上游与参考
+Fish-Speech text-to-speech running on [MLX](https://github.com/ml-explore/mlx) for Apple Silicon.
 
-算法与模型设计请参考官方仓库：
+## Upstream
+
+Algorithms and model design follow the official project:
 
 **[fishaudio/fish-speech](https://github.com/fishaudio/fish-speech)**
 
-本仓库为在 Apple 芯片上使用 [MLX](https://github.com/ml-explore/mlx) 的移植与工具代码，与上游的 PyTorch / 服务端推理栈不同；使用与排障请以本仓库说明为准，模型能力与许可以上游与权重发布页为准。
+This repository is a MLX port and toolkit for Apple chips. It is **not** the upstream PyTorch / server stack; refer to this repo for MLX usage and troubleshooting. Model capabilities and licensing are defined by upstream and each model’s release page.
 
-更完整的安装、命令行 / WebUI / Docker 与服务器推理说明见官方文档：[speech.fish.audio](https://speech.fish.audio/)（例如 [安装](https://speech.fish.audio/install/)、[命令行推理](https://speech.fish.audio/inference/#command-line-inference)）。
+Full upstream install, CLI / WebUI / Docker, and server docs: **[speech.fish.audio](https://speech.fish.audio/)** (e.g. [Installation](https://speech.fish.audio/install/), [CLI inference](https://speech.fish.audio/inference/#command-line-inference)).
 
-## 模型说明（与官方一致）
+## Models (aligned with official docs)
 
 ### Fish Audio S1-mini
 
-- **定位**：[Fish Audio S1-mini](https://huggingface.co/fishaudio/s1-mini) 为 **S1（约 4B，完整版为专有模型）的蒸馏版，约 0.5B 参数**；在 **200 万小时以上** 多语言音频上训练，并采用 **在线 RLHF** 对齐。
-- **权重与许可**：公开权重见 Hugging Face **[fishaudio/s1-mini](https://huggingface.co/fishaudio/s1-mini)**；模型卡注明许可为 **CC-BY-NC-SA-4.0**（商业等用途以模型卡与许可证全文为准）。
-- **能力摘要**：多语言 TTS；官方文档列出大量 **情感 / 语气 / 副语言** 标记（模型卡中为英文说明，标记多为 `(emotion)`、`(tone)` 等形式），详见模型卡 **Emotion and Tone Support**。
-- **在本仓库中**：示例默认从本地目录 `weights/openaudio-s1-mini` 加载（与上游 `fishaudio/s1-mini` 对应）；使用 **ContentSequence interleave** 对话格式，**无需参考音频**即可合成。
+- **Role**: [Fish Audio S1-mini](https://huggingface.co/fishaudio/s1-mini) is a **~0.5B distilled** variant of **S1 (~4B; full-size model is proprietary)**. Trained on **2M+ hours** of multilingual audio with **online RLHF**.
+- **Weights & license**: **[fishaudio/s1-mini](https://huggingface.co/fishaudio/s1-mini)** on Hugging Face; model card states **CC-BY-NC-SA-4.0** (see the full license for commercial and other uses).
+- **Capabilities**: Multilingual TTS; the card documents many **emotion / tone / paralinguistic** markers (often `(emotion)`, `(tone)`, etc.). See **Emotion and Tone Support** on the model card.
+- **In this repo**: Examples load from `weights/openaudio-s1-mini` (maps to upstream `fishaudio/s1-mini`); **ContentSequence interleave** format; **no reference audio** required for basic synthesis.
 
 ### Fish Audio S2 Pro
 
-- **定位**：官方旗舰多语言 TTS（[fishaudio/s2-pro](https://huggingface.co/fishaudio/s2-pro)），约 **4B** 慢自回归主干 + **Dual-AR**：配合 RVQ 音频编解码（**10 个码本、约 21 Hz**），其中 **Fast AR 约 4 亿参数** 逐步生成其余码本；训练规模官方表述为 **1000 万小时以上**、**80+ 语言**，并用 **GRPO** 等做强化学习对齐（详见 [S2 技术报告](https://arxiv.org/abs/2603.08823)）。
-- **权重与许可**：**[Fish Audio Research License](https://huggingface.co/fishaudio/s2-pro/blob/main/LICENSE.md)**；研究与非商业免费，商业需联系 Fish Audio（见模型卡）。
-- **能力摘要**：文中 **`[标签]`** 做韵律与情感的细粒度控制（官方强调支持大量自由描述，不限固定词表）；支持 **短时参考音频的零样本音色克隆**（官方常见建议约 **10–30 秒**）、**多说话人**（`<|speaker:i|>` 等，见上游文档）、**多轮上下文**。上游还提供基于 **SGLang** 的流式推理栈；本仓库为 **MLX 本地推理**，API 与性能数字与上游不完全相同。
-- **在本仓库中**：示例从 `weights/s2-pro` 加载；使用 **Conversation / chat template** 格式，可选 `--prompt` 参考码本做克隆；情感示例与官方 `[tag]` 用法一致，具体标签表以 [fish-speech README](https://github.com/fishaudio/fish-speech) 与模型卡为准。
+- **Role**: Flagship multilingual TTS ([fishaudio/s2-pro](https://huggingface.co/fishaudio/s2-pro)): **~4B** slow autoregressive backbone + **Dual-AR** with RVQ audio codec (**10 codebooks, ~21 Hz**); **Fast AR ~400M** parameters for the remaining codebooks per step. Official training scale: **10M+ hours**, **80+ languages**, **GRPO**-style RL alignment ([S2 technical report](https://arxiv.org/abs/2603.08823)).
+- **Weights & license**: **[Fish Audio Research License](https://huggingface.co/fishaudio/s2-pro/blob/main/LICENSE.md)**; research and non-commercial use free; commercial use requires Fish Audio (see model card).
+- **Capabilities**: Fine-grained prosody/emotion via **`[tags]`** in text (open-ended descriptions, not only a fixed list); **zero-shot voice cloning** from short reference audio (official guidance often **~10–30 s**); **multi-speaker** (`<|speaker:i|>`, etc., in upstream docs); **multi-turn** context. Upstream also ships **SGLang** streaming inference; **this repo is MLX local inference**—APIs and benchmark numbers differ from upstream.
+- **In this repo**: Examples load `weights/s2-pro`; **Conversation / chat template**; optional `--prompt` codebooks for cloning; tag usage follows upstream `[tag]` style—see [fish-speech README](https://github.com/fishaudio/fish-speech) and model cards for full tag lists.
 
 ## Features
 
-- Native MLX implementation for Apple Silicon
-- 支持 **S1-mini**（轻量）与 **S2 Pro**（旗舰）权重路径下的推理与量化（见 `examples/`）
-- S2 Pro 路径下支持零样本音色克隆（参考音频）；S1-mini 以官方多语言与情感标记能力为基础（见模型卡）
-- 在 Apple Silicon 上可做到较低延迟合成（具体见下文 Performance）
+- Native MLX on Apple Silicon
+- Inference and optional quantization for **S1-mini** and **S2 Pro** weight layouts (see `examples/`)
+- Zero-shot voice cloning on the S2 Pro path (reference audio); S1-mini follows upstream multilingual + marker behavior (see model card)
+- Low-latency synthesis on Apple Silicon (see **Performance** below)
 
 ## Installation
 
@@ -41,7 +43,7 @@ Fish-Speech 文本转语音的 MLX 实现，面向 Apple Silicon。
 pip install mlx-fish-speech
 ```
 
-Or from source:
+From source:
 
 ```bash
 git clone https://github.com/user/mlx-fish-speech.git
@@ -68,7 +70,7 @@ audio.save("output.wav")
 # Generate speech from text
 mlx-fish-speech --text "Hello, world!" --output hello.wav
 
-# With Chinese text
+# Chinese text
 mlx-fish-speech --text "今天天气真好" --output weather.wav
 ```
 
@@ -91,28 +93,28 @@ mlx-fish-speech/
 
 ## Performance
 
-在 **Apple M4 Max**、**未开启** macOS「高性能」电源模式（系统默认电源策略）下，用 **同一句中文**（约二十余字、**无参考音色**）分别运行 `examples/s1_mini_tts.py`（S1-mini）与 `examples/s2_pro_tts.py`（S2-Pro，权重位于 `weights/s2-pro/`），单次实测（**不含**首次加载权重时间）。**RTF** = 纯生成耗时 ÷ 输出音频时长（小于 1 表示快于实时）；**tok/s** 为慢解码语义步吞吐。
+Measured on **Apple M4 Max** with **High Power Mode off** (default macOS power settings). Same **Chinese sentence** (~20+ characters), **no reference voice**, one run each for `examples/s1_mini_tts.py` and `examples/s2_pro_tts.py` (S2 weights under `weights/s2-pro/`). **Excludes** first-time weight load. **RTF** = generation wall time ÷ output audio duration (below 1 means faster than real time); **tok/s** is slow-decoder semantic throughput.
 
-| 模型 | 量化 | RTF | 语义 tok/s | 音频 frames/s |
-|------|------|-----|------------|---------------|
-| S1-mini | 无量化 | ~0.37 | ~58 | ~57 |
+| Model | Quantization | RTF | Semantic tok/s | Audio frames/s |
+|-------|----------------|-----|----------------|----------------|
+| S1-mini | none | ~0.37 | ~58 | ~57 |
 | S1-mini | INT8 | ~0.19 | ~117 | ~115 |
 | S1-mini | INT4 | ~0.16 | ~136 | ~134 |
 | S2-Pro | INT8 | ~0.76 | ~29 | ~29 |
 | S2-Pro | INT4 | ~0.68 | ~32 | ~31 |
 
-其它机型未在同一环境复测；随机型、是否开启「高性能」、量化、文本长度、是否带音色参考及系统负载变化较大，上表仅作同条件对照。
+Other Macs were not re-tested under the same setup; chip, power mode, quantization, text length, reference audio, and load strongly affect numbers—use the table for like-for-like comparison only.
 
-## 法律免责声明
+## Legal disclaimer
 
-- 本软件按「现状」提供，作者与贡献者**不对**因使用或无法使用本软件造成的任何直接、间接、偶然或后果性损害承担责任。
-- 使用者须自行遵守所在地关于著作权、肖像权、个人信息保护、深度伪造（deepfake）、电信与内容监管等法律法规。**禁止**将本工具用于未经授权模仿他人声音、欺诈、骚扰、诽谤或其他违法用途。
-- 上游 Fish Speech 项目对其代码与关联权重另有许可（例如 **FISH AUDIO RESEARCH LICENSE**），使用权重与再分发前请阅读上游 [LICENSE](https://github.com/fishaudio/fish-speech/blob/main/LICENSE) 与模型卡说明。
+- This software is provided **as-is**; authors and contributors **disclaim** liability for any direct, indirect, incidental, or consequential damages from use or inability to use it.
+- You must comply with local laws on copyright, personality rights, privacy, synthetic media, telecom, and content regulation. **Do not** use this tool for unauthorized voice imitation, fraud, harassment, defamation, or other unlawful purposes.
+- Upstream Fish Speech code and weights have their own licenses (e.g. **FISH AUDIO RESEARCH LICENSE**). Read the upstream [LICENSE](https://github.com/fishaudio/fish-speech/blob/main/LICENSE) and each model card before using or redistributing weights.
 
-## 语音克隆与使用责任
+## Voice cloning responsibility
 
-使用本仓库进行**声音克隆、模仿特定人声或生成语音内容**时，所产生的一切法律后果、民事或行政责任以及对第三方造成的损害，**均由使用者本人承担**；使用者应仅在取得合法授权或仅针对本人/有权使用的素材的前提下使用相关功能。
+If you use this repo for **voice cloning, imitation, or speech generation**, **you alone** bear all legal, civil, and regulatory consequences and any harm to third parties. Only use these features with proper authorization or on audio you have the right to use.
 
 ## License
 
-Apache 2.0（本仓库代码）。模型权重许可以上游与 Hugging Face 等平台发布为准。
+Apache 2.0 for **this repository’s code**. Model weights are governed by upstream and Hugging Face (or other) release terms.

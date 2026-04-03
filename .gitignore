@@ -208,3 +208,4 @@ __marimo__/
 
 # Override global *.md ignore (e.g. ~/.gitignore_global) for this repo
 !README.md
+!README.zh.md
